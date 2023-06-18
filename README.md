@@ -21,34 +21,35 @@ use Effectra\Renova\TemplateEngine;
 
 $template = new TemplateEngine();
 
-// Register global variables
-$template->registerGlobalVars('siteName', 'My Website');
-$template->registerGlobalVars('pageTitle', 'Home');
-
-// Register functions
-$template->registerFunction('url', function ($route) {
-    // Generate URL based on the provided route
-    // Replace this with your actual URL generation logic
-    return 'https://example.com/' . $route;
-});
-
 // Render a template file
-$content = file_get_contents('path/to/template.tpl');
-$data = [
-    'username' => 'JohnDoe',
-    'isLoggedIn' => true,
-];
-$renderedContent = $template->render($content, $data);
+$content = (new Render(
+    $path,
+    $data,
+    [
+        ['url' => function ($path = '') {
+                return Request::url() . (string) $path;
+            }]
+    ],
+    [
+        ['APP_NAME' => $_ENV['APP_NAME'] ]
+    ],
+    $this->reader
+))->send();
+
+$links = $this->encore->linkTags('app');
+$scripts = $this->encore->scriptTags('app');
+
+$content = $this->addLinksAndScripts($content, $links, $scripts);
 ```
 
-In the example above, we create a new instance of the `TemplateEngine` class. We then register global variables and functions using the `registerGlobalVars` and `registerFunction` methods, respectively. Finally, we render a template file by passing the template content and data to the `render` method.
+In the example above, we create a new instance of the `TemplateEngine` class indirectly by instantiating the `Render` class. The `Render` class uses the `TemplateEngine` internally for rendering the template file. We pass the necessary arguments to the `Render` constructor, including the template file path, data, template functions, template global variables, and an instance of the `Reader` class.
 
 ### Web Asset Management
 
 The web asset management feature allows you to generate script and link tags for web assets managed by Encore. Here's an example of how to use the web asset management:
 
 ```php
-use Effectra\WebEncore;
+use Effectra\Renova\WebEncore;
 
 $webEncore = new WebEncore();
 

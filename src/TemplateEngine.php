@@ -223,6 +223,9 @@ class TemplateEngine
     public function renderGlobalVars(string $content): string
     {
         foreach ($this->globalVars as $name => $callable) {
+            if (is_callable($callable)) {
+                $callable = call_user_func($callable, []);
+            }
             $content = preg_replace_callback('/{{(' . $name . '+)}}/', function ($matches) use ($callable) {
                 return $callable;
             }, $content);

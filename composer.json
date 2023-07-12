@@ -15,7 +15,7 @@
         }
     ],
     "require": {
-        "effectra/fs":"1.0"
+        "effectra/fs":"*"
     },
     "minimum-stability": "stable"
 }
